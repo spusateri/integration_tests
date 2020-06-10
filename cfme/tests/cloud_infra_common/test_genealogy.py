@@ -7,6 +7,7 @@ from cfme.cloud.provider import CloudProvider
 from cfme.common.provider import BaseProvider
 from cfme.containers.provider.openshift import OpenshiftProvider
 from cfme.exceptions import ToolbarOptionGreyedOrUnavailable
+from cfme.infrastructure.config_management import ConfigManagerProvider
 from cfme.infrastructure.provider.rhevm import RHEVMProvider
 from cfme.infrastructure.provider.scvmm import SCVMMProvider
 from cfme.infrastructure.provider.virtualcenter import VMwareProvider
@@ -55,6 +56,9 @@ def create_vm_with_clone(request, create_vm, provider, appliance):
 @pytest.mark.uncollectif(lambda provider, from_edit:
                          provider.one_of(CloudProvider) and not from_edit,
                          reason='Cloud provider genealogy only shown on edit')
+@pytest.mark.uncollectif(lambda provider:
+                        provider.one_of(ConfigManagerProvider),
+                        reason='Config management does not have genealogy')
 @pytest.mark.parametrize('create_vm', ['small_template'], indirect=True)
 def test_vm_genealogy_detected(
         request, setup_provider, provider, small_template, soft_assert, from_edit, create_vm):
